@@ -32,8 +32,8 @@ sur_Phy="A"
 
 for i in {A..Z}
 	do
-	j=`grep -c ^$i PoD_students.csv`
-	k=`grep -c ^$i Physics_students.csv`
+	j=`grep -v -e  "^Family" PoD_students.csv | grep -c ^$i PoD_students.csv`
+	k=`grep -v -e  "^Family" Physics_students.csv | grep -c ^$i Physics_students.csv`
 	echo "$i $j $k"
 	if [ $j -gt $max_PoD ]
 		then
@@ -51,11 +51,13 @@ echo "$sur_PoD $max_PoD"
 echo "Highest frequency at Physics of Data:"
 echo "$sur_Phy $max_Phy"
 
-line_count=`grep -c -v "^Family" LCP_22-23_students.csv`
-echo "$line_count"
-module=18
-max_remainder=$(( module-1 ))
-for (( i=0; i<=$max_remainder; i++ ))
-	do
-	awk "NR%$module==$i" LCP_22-23_students.csv > "Group$i.csv"
-	done
+lines=`grep '' -c LCP_22-23_students.csv`
+i=2
+while [ $i -le $lines ]
+do
+    let g=($i-1)%18 #real computation for variables needs let or (( ))
+    file="Group$g.csv"
+    touch $file
+    awk NR==$i LCP_22-23_students.csv >> $file #selected line with awk
+    let i+=1
+done
