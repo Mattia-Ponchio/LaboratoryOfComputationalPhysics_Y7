@@ -1,6 +1,6 @@
 #!/bin/bash
 
-grep -v '^#' data.csv | sed -e 's/,/ /g' > data.txt
+grep -v '^#' data.csv | sed -e 's/,//g' > data.txt
 even=0
 for i in `cat data.txt`
 do
@@ -22,14 +22,7 @@ do
     IFS=' ' read -r X Y Z x y z <<< "$line"
     d=$( echo "scale=6;sqrt($X*$X+$Y*$Y+$Z*$Z)" | bc)
     #echo $d
-    if [ `echo "$d < $sigma" | bc` -eq 0 ]
-    then
-        let m++
-    else
-        let l++
-    fi
-    d2=$( echo "scale=6;sqrt($x*$x+$y*$y+$z*$z)" | bc)
-    if [ `echo "$d2 < $sigma" | bc` -eq 0 ]
+    if [ `echo "$d > $sigma" | bc` -eq 1 ]
     then
         let m++
     else
@@ -40,6 +33,7 @@ done
 
 echo "there are $m of distance greater than $sigma"
 echo "there are $l of distance smaller than $sigma"
+
 if [ -z $1 ]
 then
     echo "This program requires an input for normalization"
